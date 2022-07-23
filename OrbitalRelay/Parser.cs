@@ -60,11 +60,14 @@ namespace OrbitalRelay
         {
 			FeedTitle = TitleFinder.ExtractTitle(gemtext);
 
+			var links = LinkFinder.ExtractBodyLinks(FeedUrl, gemtext).ToList();
+			var items = links.Select(x => CreateItem(x)).ToList();
+
+
 			return new Feed
 			{
 				Title = FeedTitle,
-				Items = LinkFinder.ExtractBodyLinks(FeedUrl, gemtext)
-				.Select(x => CreateItem(x)).Where(x => x != null).ToList()
+				Items = items.Where(x => x != null).ToList()
 			};
         }
 

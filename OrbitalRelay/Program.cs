@@ -14,7 +14,8 @@ namespace OrbitalRelay
 
         static void Main(string[] args)
         {
-            var lines = File.ReadAllLines("/Users/billy/tmp/all-feeds.txt");
+        
+            var lines = File.ReadAllLines("/Users/billy/tmp/reachable-feeds.txt");
 
             Parallel.ForEach(lines, new ParallelOptions { MaxDegreeOfParallelism = 30 }, line =>
             {
@@ -48,6 +49,12 @@ namespace OrbitalRelay
 
         static void WriteBlast()
         {
+            FoundItems.Sort((x, y) => x.Url.CompareTo(y.Url));
+
+            StreamWriter fout = new StreamWriter("/Users/billy/tmp/debug.gmi");
+            FoundItems.ToList().ForEach(item => fout.WriteLine($"=> {item.Published.ToString("yyyy-MM-dd")}\t{item.Url}\t{item.FeedUrl}\t{item.FeedTitle}\t{item.Title}"));
+            fout.Close();
+
 
             var distinct = FoundItems
                 .GroupBy(x => x.Url)
@@ -57,7 +64,7 @@ namespace OrbitalRelay
                 x.Published.CompareTo(y.Published) * -1 :
                 x.FeedTitle.CompareTo(y.FeedTitle));
 
-            StreamWriter fout = new StreamWriter("/Users/billy/tmp/orbital-blast.gmi");
+            fout = new StreamWriter("/Users/billy/tmp/orbital-relay.gmi");
 
             var curr = DateTime.MinValue;
 
